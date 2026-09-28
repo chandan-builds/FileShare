@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "r2:cors": "tsx scripts/configure-cors.ts",
+    "cleanup:expired": "tsx scripts/cleanup-expired.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@aws-sdk/s3-request-presigner": "^3.1141.0",
+    "lucide-react": "^1.48.0",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -22,6 +27,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

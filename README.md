@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FileShare
 
-## Getting Started
+Private, WeTransfer-style file sharing on Next.js and Cloudflare R2.
 
-First, run the development server:
+Files upload from the browser to a private R2 bucket using short-lived presigned URLs. Share metadata is stored as JSON objects in the same bucket. The Vercel filesystem is never used for persistent storage.
+
+## Local development
+
+1. Copy `.env.example` to `.env.local` and fill in R2 values.
+2. Install and run:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Open [http://localhost:3000](http://localhost:3000).
+4. Apply R2 CORS after credentials are in `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run r2:cors
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Object Read & Write tokens cannot change CORS. If that command returns Access Denied, set CORS in the Cloudflare dashboard: bucket → Settings → CORS.
 
-## Learn More
+## Free-tier cap
 
-To learn more about Next.js, take a look at the following resources:
+The app refuses uploads that would push the bucket over `R2_FREE_TIER_STORAGE_GB` (default 9 GB, below R2's 10 GB included storage). Cloudflare's "R2 Paid" label is pay-as-you-go with included free usage; the app cap is what keeps storage from billing overage. A $1 Billing Budget Alert is an email warning only — it does not hard-stop Cloudflare charges.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Name | Where it is used |
+| --- | --- |
+| `R2_ACCOUNT_ID` | Server only |
+| `R2_ACCESS_KEY_ID` | Server only |
+| `R2_SECRET_ACCESS_KEY` | Server only |
+| `R2_BUCKET_NAME` | Server only |
+| `R2_ENDPOINT` | Server only |
+| `MAX_FILE_SIZE_MB` | Server (default `2048`) |
+| `R2_FREE_TIER_STORAGE_GB` | Server hard cap (default `9`, never above 9) |
+| `NEXT_PUBLIC_APP_URL` | Public app origin for share links |
+| `CORS_ALLOWED_ORIGINS` | Optional extra origins for `npm run r2:cors` |
 
-## Deploy on Vercel
+Never put R2 secrets in `NEXT_PUBLIC_*` variables.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Import this Next.js project.
+2. Set the environment variables above.
+3. Set `NEXT_PUBLIC_APP_URL` to the production URL.
+4. Deploy.
+5. Run `npm run r2:cors` with the production origin included.
+
+## Cleanup expired files
+
+```bash
+npm run cleanup:expired
+```
+
+This can be scheduled later as a cron job.
+
+## Changing the R2 bucket
+
+1. Create a new private bucket.
+2. Create least-privilege R2 access keys for that bucket.
+3. Update `R2_BUCKET_NAME`, keys, and endpoint.
+4. Run `npm run r2:cors`.
+5. Redeploy so serverless functions pick up the new values.
