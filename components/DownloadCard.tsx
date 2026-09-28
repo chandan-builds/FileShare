@@ -52,7 +52,7 @@ export function DownloadCard({ share }: { share: PublicShareInfo }) {
         <p className="mt-2 text-sm text-muted">
           {share.expiresAt
             ? `Expires ${formatUploadDate(share.expiresAt)}`
-            : "This link does not expire"}
+            : "This file has expired"}
         </p>
         <button
           type="button"

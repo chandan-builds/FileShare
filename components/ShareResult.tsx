@@ -54,7 +54,7 @@ export function ShareResult({
             <span>
               {expiresAt
                 ? `Expires ${new Date(expiresAt).toLocaleString()}`
-                : "Does not expire"}
+                : "Expires within 1 hour"}
             </span>
           </div>
         </div>

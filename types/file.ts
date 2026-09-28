@@ -1,12 +1,13 @@
 export const EXPIRATION_OPTIONS = [
+  { value: "5m", label: "5 minutes", seconds: 60 * 5 },
+  { value: "15m", label: "15 minutes", seconds: 60 * 15 },
+  { value: "30m", label: "30 minutes", seconds: 60 * 30 },
   { value: "1h", label: "1 hour", seconds: 60 * 60 },
-  { value: "1d", label: "1 day", seconds: 60 * 60 * 24 },
-  { value: "7d", label: "7 days", seconds: 60 * 60 * 24 * 7 },
-  { value: "30d", label: "30 days", seconds: 60 * 60 * 24 * 30 },
-  { value: "never", label: "Never", seconds: null },
 ] as const;
 
 export type ExpirationValue = (typeof EXPIRATION_OPTIONS)[number]["value"];
+
+export const DEFAULT_EXPIRATION: ExpirationValue = "15m";
 
 export type ShareMetadata = {
   shareId: string;

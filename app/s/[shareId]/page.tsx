@@ -3,7 +3,7 @@ import { DownloadCard } from "@/components/DownloadCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AppError } from "@/lib/errors";
 import { getShareMetadata, headObject } from "@/lib/r2";
-import { toPublicShareInfo } from "@/lib/share";
+import { purgeExpiredShare, toPublicShareInfo } from "@/lib/share";
 import { SHARE_ID_PATTERN, isExpired } from "@/lib/validation";
 
 export default async function SharePage({
@@ -26,6 +26,7 @@ export default async function SharePage({
     const publicShare = toPublicShareInfo(metadata);
 
     if (isExpired(metadata.expiresAt) || publicShare.expired) {
+      await purgeExpiredShare(metadata);
       return (
         <ShareShell>
           <DownloadCard share={{ ...publicShare, expired: true }} />

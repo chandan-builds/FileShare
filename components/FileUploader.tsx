@@ -7,6 +7,7 @@ import { ShareResult } from "@/components/ShareResult";
 import { UploadProgress } from "@/components/UploadProgress";
 import { formatBytes, isSupportedFileName } from "@/lib/file-utils";
 import {
+  DEFAULT_EXPIRATION,
   EXPIRATION_OPTIONS,
   type CompleteUploadResponse,
   type ExpirationValue,
@@ -33,7 +34,7 @@ export function FileUploader({ maxFileSizeMb }: Props) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Waiting for a file");
   const [error, setError] = useState<string | null>(null);
-  const [expiresIn, setExpiresIn] = useState<ExpirationValue>("7d");
+  const [expiresIn, setExpiresIn] = useState<ExpirationValue>(DEFAULT_EXPIRATION);
   const [result, setResult] = useState<CompleteUploadResponse | null>(null);
 
   const maxBytes = maxFileSizeMb * 1024 * 1024;
@@ -274,7 +275,7 @@ export function FileUploader({ maxFileSizeMb }: Props) {
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium text-muted">Link expiration</legend>
         <p className="text-sm text-muted">
-          Default is 7 days. Permanent links still count against the 9 GB free cap.
+          Files are deleted after the link expires. Longest option is 1 hour.
         </p>
         <div className="flex flex-wrap gap-2">
           {EXPIRATION_OPTIONS.map((option) => {

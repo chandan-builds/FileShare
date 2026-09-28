@@ -9,7 +9,7 @@ import {
   expirationToIso,
   parseExpiration,
 } from "@/lib/validation";
-import type { ShareMetadata } from "@/types/file";
+import { DEFAULT_EXPIRATION, type ShareMetadata } from "@/types/file";
 
 export const runtime = "nodejs";
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       contentType: body.contentType,
       size: body.size,
     });
-    const expiresIn = parseExpiration(body.expiresIn ?? "7d");
+    const expiresIn = parseExpiration(body.expiresIn ?? DEFAULT_EXPIRATION);
 
     try {
       const existing = await getShareMetadata(shareId);

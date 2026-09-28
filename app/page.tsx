@@ -14,8 +14,8 @@ export default function HomePage() {
           Share files easily
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-center text-muted">
-          Drop a file, get a private link, and let anyone download it before it expires.
-          Uploads stop at 9 GB total so the bucket stays on Cloudflare R2 free usage.
+          Drop a file, get a private link, and let anyone download it within 5 minutes to 1 hour.
+          Then the file is deleted. Uploads stop at 9 GB total so the bucket stays on free R2 usage.
         </p>
         <div className="mt-10 rounded-[2rem] border border-line bg-surface p-5 shadow-[0_30px_80px_rgba(0,0,0,0.28)] sm:p-8">
           <FileUploader maxFileSizeMb={maxFileSizeMb} />

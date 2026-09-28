@@ -6,7 +6,7 @@ import {
   getMaxFileSizeBytes,
 } from "@/lib/env";
 import { AppError } from "@/lib/errors";
-import { formatBytes } from "@/lib/file-utils";
+import { formatBytes, metadataKey } from "@/lib/file-utils";
 import { deleteObject, getUsedStorageBytes, headObject } from "@/lib/r2";
 import { isExpired } from "@/lib/validation";
 import type { PublicShareInfo, ShareMetadata } from "@/types/file";
@@ -87,8 +87,22 @@ export async function enforceFreeTierAfterUpload(objectKey: string, uploadedByte
   }
 }
 
-export function assertNotExpired(metadata: ShareMetadata) {
+export async function purgeExpiredShare(metadata: ShareMetadata) {
+  try {
+    await deleteObject(metadata.objectKey);
+  } catch {
+    // Object may already be gone.
+  }
+  try {
+    await deleteObject(metadataKey(metadata.shareId));
+  } catch {
+    // Metadata may already be gone.
+  }
+}
+
+export async function assertNotExpired(metadata: ShareMetadata) {
   if (isExpired(metadata.expiresAt)) {
+    await purgeExpiredShare(metadata);
     throw new AppError("This file has expired.", 410, "FILE_EXPIRED");
   }
 }

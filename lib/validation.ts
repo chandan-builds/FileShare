@@ -27,16 +27,16 @@ export function parseExpiration(value: unknown): ExpirationValue {
   return match.value;
 }
 
-export function expirationToIso(value: ExpirationValue, from = new Date()): string | null {
+export function expirationToIso(value: ExpirationValue, from = new Date()): string {
   const option = EXPIRATION_OPTIONS.find((item) => item.value === value);
-  if (!option || option.seconds === null) return null;
-  return new Date(from.getTime() + option.seconds * 1000).toISOString();
+  const seconds = option?.seconds ?? 60 * 15;
+  return new Date(from.getTime() + seconds * 1000).toISOString();
 }
 
 export function isExpired(expiresAt: string | null, now = new Date()): boolean {
-  if (!expiresAt) return false;
+  if (!expiresAt) return true;
   const expires = new Date(expiresAt);
-  if (Number.isNaN(expires.getTime())) return false;
+  if (Number.isNaN(expires.getTime())) return true;
   return expires.getTime() <= now.getTime();
 }
 

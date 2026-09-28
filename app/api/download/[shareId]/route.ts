@@ -18,13 +18,19 @@ export async function GET(
     const { shareId: rawId } = await context.params;
     const shareId = assertShareId(rawId);
     const metadata = await getShareMetadata(shareId);
-    assertNotExpired(metadata);
+    await assertNotExpired(metadata);
     await headObject(metadata.objectKey);
+
+    const remainingSeconds = metadata.expiresAt
+      ? Math.max(30, Math.floor((new Date(metadata.expiresAt).getTime() - Date.now()) / 1000))
+      : 30;
+    const expiresIn = Math.min(600, remainingSeconds);
 
     const downloadUrl = await createPresignedGetUrl({
       objectKey: metadata.objectKey,
       fileName: metadata.originalFileName,
       contentType: metadata.contentType,
+      expiresIn,
     });
 
     if (request.nextUrl.searchParams.get("redirect") === "1") {
@@ -36,7 +42,7 @@ export async function GET(
       fileName: metadata.originalFileName,
       contentType: metadata.contentType,
       size: metadata.size,
-      expiresInSeconds: 600,
+      expiresInSeconds: expiresIn,
     });
   } catch (error) {
     return jsonError(error);

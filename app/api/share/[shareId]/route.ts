@@ -1,7 +1,7 @@
 import { jsonError } from "@/lib/errors";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getShareMetadata } from "@/lib/r2";
-import { toPublicShareInfo } from "@/lib/share";
+import { assertNotExpired, toPublicShareInfo } from "@/lib/share";
 import { assertShareId } from "@/lib/validation";
 
 export const runtime = "nodejs";
@@ -17,6 +17,7 @@ export async function GET(
     const { shareId: rawId } = await context.params;
     const shareId = assertShareId(rawId);
     const metadata = await getShareMetadata(shareId);
+    await assertNotExpired(metadata);
     return Response.json(toPublicShareInfo(metadata));
   } catch (error) {
     return jsonError(error);

@@ -3,6 +3,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { buildObjectKey } from "@/lib/file-utils";
 import { createPresignedPutUrl } from "@/lib/r2";
 import { assertFitsFreeTierQuota, createShareId } from "@/lib/share";
+import { DEFAULT_EXPIRATION } from "@/types/file";
 import { assertFileRequest, parseExpiration } from "@/lib/validation";
 import { getMaxFileSizeBytes } from "@/lib/env";
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
       contentType: body.contentType,
       size: body.size,
     });
-    parseExpiration(body.expiresIn ?? "7d");
+    parseExpiration(body.expiresIn ?? DEFAULT_EXPIRATION);
     await assertFitsFreeTierQuota(file.size);
 
     const shareId = createShareId();
