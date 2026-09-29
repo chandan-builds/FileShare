@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Upload, X } from "lucide-react";
 import { FileGlyph, FileTypeLabel } from "@/components/FileGlyph";
 import { ShareResult } from "@/components/ShareResult";
 import { UploadProgress } from "@/components/UploadProgress";
-import { formatBytes, isSupportedFileName } from "@/lib/file-utils";
+import { formatBytes } from "@/lib/file-utils";
 import {
   DEFAULT_EXPIRATION,
   EXPIRATION_OPTIONS,
@@ -38,11 +38,6 @@ export function FileUploader({ maxFileSizeMb }: Props) {
   const [result, setResult] = useState<CompleteUploadResponse | null>(null);
 
   const maxBytes = maxFileSizeMb * 1024 * 1024;
-  const accept = useMemo(
-    () =>
-      ".pdf,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.mov,.mp3,.csv,.txt,.json",
-    [],
-  );
 
   const reset = useCallback(() => {
     xhrRef.current?.abort();
@@ -61,13 +56,6 @@ export function FileUploader({ maxFileSizeMb }: Props) {
       if (!next) return;
       setError(null);
       setResult(null);
-
-      if (!isSupportedFileName(next.name)) {
-        setFile(null);
-        setStage("error");
-        setError("This file type is not supported.");
-        return;
-      }
 
       if (next.size > maxBytes) {
         setFile(null);
@@ -234,7 +222,6 @@ export function FileUploader({ maxFileSizeMb }: Props) {
         <input
           ref={inputRef}
           type="file"
-          accept={accept}
           className="sr-only"
           onChange={(event) => selectFile(event.target.files?.[0])}
         />
@@ -246,7 +233,7 @@ export function FileUploader({ maxFileSizeMb }: Props) {
         <span className="mt-4 inline-flex min-h-12 items-center rounded-2xl bg-accent px-5 font-semibold text-accent-ink">
           Choose File
         </span>
-        <p className="mt-4 text-sm text-muted">Up to {maxFileSizeMb} MB per file</p>
+        <p className="mt-4 text-sm text-muted">Any file type, up to {maxFileSizeMb} MB</p>
       </label>
 
       {file ? (

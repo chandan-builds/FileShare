@@ -1,25 +1,3 @@
-const ALLOWED_EXTENSIONS = new Set([
-  "pdf",
-  "zip",
-  "doc",
-  "docx",
-  "xls",
-  "xlsx",
-  "ppt",
-  "pptx",
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "webp",
-  "mp4",
-  "mov",
-  "mp3",
-  "csv",
-  "txt",
-  "json",
-]);
-
 const FALLBACK_CONTENT_TYPE = "application/octet-stream";
 
 export function getFileExtension(fileName: string): string {
@@ -27,11 +5,6 @@ export function getFileExtension(fileName: string): string {
   const parts = base.split(".");
   if (parts.length < 2) return "";
   return parts.pop()?.toLowerCase() ?? "";
-}
-
-export function isSupportedFileName(fileName: string): boolean {
-  const extension = getFileExtension(fileName);
-  return ALLOWED_EXTENSIONS.has(extension);
 }
 
 export function sanitizeFileName(fileName: string): string {
@@ -95,4 +68,4 @@ export function formatUploadDate(iso: string): string {
   }).format(date);
 }
 
-export { ALLOWED_EXTENSIONS, FALLBACK_CONTENT_TYPE };
+export { FALLBACK_CONTENT_TYPE };

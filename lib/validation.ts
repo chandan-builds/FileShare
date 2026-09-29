@@ -2,7 +2,6 @@ import { EXPIRATION_OPTIONS, type ExpirationValue } from "@/types/file";
 import { AppError } from "@/lib/errors";
 import {
   isSafeObjectKey,
-  isSupportedFileName,
   normalizeContentType,
   sanitizeFileName,
 } from "@/lib/file-utils";
@@ -54,13 +53,6 @@ export function assertFileRequest(input: {
   }
 
   const originalFileName = sanitizeFileName(input.fileName);
-  if (!isSupportedFileName(originalFileName) && !isSupportedFileName(input.fileName)) {
-    throw new AppError(
-      "This file type is not supported. Try PDF, ZIP, Office, image, audio, video, CSV, TXT, or JSON.",
-      415,
-      "UNSUPPORTED_FILE",
-    );
-  }
 
   if (typeof input.size !== "number" || !Number.isFinite(input.size) || input.size < 0) {
     throw new AppError("A valid file size is required.", 400, "INVALID_FILE_SIZE");
